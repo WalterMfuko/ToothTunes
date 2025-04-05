@@ -30,12 +30,18 @@
         }
         
         header {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            background-color: white;
             width: 100%;
-            padding: 1.5rem;
+            padding: 2rem;
             box-shadow: 0 2px 10px rgba(0,0,0,0.1);
             text-align: center;
-            color: white;
+            color: var(--dark);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
         }
         
         h1 {
@@ -44,10 +50,10 @@
         }
         
         .tooth-icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 10px;
+            width: 180px;
+            height: auto;
             vertical-align: middle;
+            margin: 0;
         }
         
         main {
@@ -119,96 +125,145 @@
         
         /* Interactive Teeth */
         .mouth-container {
-            width: 300px;
-            height: 300px;
-            margin: 1rem 0;
+            width: 90%;
+            max-width: 300px;
+            height: auto;
+            aspect-ratio: 300 / 260;
+            margin: 1rem auto;
             position: relative;
         }
-        
+
         .mouth {
             width: 100%;
             height: 100%;
-            background-color: #f8f8f8;
-            border-radius: 50%;
+            background-color: #ffcdd2; /* Pink mouth interior */
+            border-radius: 40% / 30%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 8px solid #d32f2f; /* Darker red for lips */
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .teeth-container {
+            width: 90%;
+            height: 80%;
             position: relative;
             display: flex;
             flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            border: 2px solid #ddd;
+            justify-content: space-between;
         }
-        
-        .quadrant {
-            position: absolute;
-            width: 48%;
-            height: 48%;
-            border: 2px solid #ddd;
-            background-color: white;
-            transition: all 0.3s ease;
+
+        .teeth-row {
+            width: 100%;
+            height: 40%;
             display: flex;
-            align-items: center;
             justify-content: center;
-            cursor: pointer;
-            font-weight: bold;
-            font-size: 0.8rem;
-            text-align: center;
+            background-color: #ef9a9a; /* Gums color */
+            border-radius: 40px;
         }
-        
+
+        .top-row {
+            border-bottom-left-radius: 100px;
+            border-bottom-right-radius: 100px;
+        }
+
+        .bottom-row {
+            border-top-left-radius: 100px;
+            border-top-right-radius: 100px;
+        }
+
+        .quadrant {
+            width: 50%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            padding: 5px 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tooth {
+            width: 20%;
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .top-row .tooth {
+            height: 70%;
+            margin-top: auto;
+            border-top-left-radius: 40%;
+            border-top-right-radius: 40%;
+        }
+
+        .bottom-row .tooth {
+            height: 70%;
+            margin-bottom: auto;
+            border-bottom-left-radius: 40%;
+            border-bottom-right-radius: 40%;
+        }
+
         .quadrant:hover {
             background-color: rgba(0, 188, 212, 0.1);
         }
-        
+
         .quadrant.active {
             background-color: rgba(0, 188, 212, 0.3);
-            color: var(--dark);
-            border-color: var(--primary);
         }
-        
+
+        .quadrant.active .tooth {
+            box-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+        }
+
         .quadrant.completed {
             background-color: rgba(76, 175, 80, 0.3);
-            border-color: var(--success);
         }
-        
-        .top-left {
-            top: 5%;
-            left: 5%;
-            border-top-left-radius: 100%;
+
+        .quadrant.completed .tooth {
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
         }
-        
-        .top-right {
-            top: 5%;
-            right: 5%;
-            border-top-right-radius: 100%;
-        }
-        
-        .bottom-left {
-            bottom: 5%;
-            left: 5%;
-            border-bottom-left-radius: 100%;
-        }
-        
-        .bottom-right {
-            bottom: 5%;
-            right: 5%;
-            border-bottom-right-radius: 100%;
-        }
-        
-        .divider-h {
+
+        .quadrant-label {
             position: absolute;
-            width: 80%;
-            height: 2px;
-            background-color: #ddd;
-            top: 50%;
-            left: 10%;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0,0,0,0.4);
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
         }
-        
-        .divider-v {
-            position: absolute;
-            width: 2px;
-            height: 80%;
-            background-color: #ddd;
-            left: 50%;
-            top: 10%;
+
+        .quadrant-label.tl {
+            top: 5px;
+            left: 5px;
+        }
+
+        .quadrant-label.tr {
+            top: 5px;
+            right: 5px;
+        }
+
+        .quadrant-label.bl {
+            bottom: 5px;
+            left: 5px;
+        }
+
+        .quadrant-label.br {
+            bottom: 5px;
+            right: 5px;
+        }
+
+        /* Remove the old dividers */
+        .divider-h, .divider-v {
+            display: none;
         }
         
         .controls {
@@ -327,23 +382,65 @@
                 height: 250px;
             }
         }
+
+        @media (max-width: 768px) {
+            .tooth-icon {
+                width: 140px;
+            }
+            
+            h2 {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .tooth-icon {
+                width: 120px;
+            }
+            
+            .timer {
+                font-size: 3rem;
+            }
+            
+            .instruction {
+                font-size: 1rem;
+                padding: 0.6rem;
+            }
+            
+            .quadrant-label {
+                font-size: 0.6rem;
+                padding: 2px 4px;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-height: 700px) {
+            .tooth-icon {
+                width: 100px;
+            }
+            
+            main {
+                padding: 1rem;
+                margin: 1rem auto;
+            }
+        }
     </style>
 </head>
 <body>
     <header>
-        <h1>
-            <svg class="tooth-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                <path d="M12,2C7.03,2 3,6.03 3,11C3,13.92 4.5,16.49 6.67,18.71C8.08,20.12 9.89,22 12,22C14.11,22 15.92,20.12 17.33,18.71C19.5,16.49 21,13.92 21,11C21,6.03 16.97,2 12,2M12,4C14.12,4 16.07,4.74 17.62,5.97C19.55,7.67 20.75,9.75 20.75,11C20.75,13.58 19.4,15.82 17.4,17.74C16.65,18.5 15.8,19.23 14.96,19.76C13.97,20.4 12.93,20.75 12,20.75C11.07,20.75 10.03,20.4 9.04,19.76C8.2,19.23 7.35,18.5 6.6,17.74C4.6,15.82 3.25,13.58 3.25,11C3.25,9.75 4.45,7.67 6.38,5.97C7.93,4.74 9.88,4 12,4Z"/>
-            </svg>
-            Tooth Tunes
-        </h1>
+        <div class="logo-container">
+            <img src="Tooth Tunes Logo.png" alt="Tooth Tunes Logo" class="tooth-icon">
+        </div>
         <p>Brush your teeth to the rhythm of your favorite songs</p>
     </header>
     
     <main>
         <h2>Choose Your Profile</h2>
         <div class="profiles" id="profiles">
-            <div class="profile" data-profile="Walter" data-song="walters.mp3">
+            <div class="profile" data-profile="Walter" data-song="Sounds of blackness Optimistic.mp3">
                 <div class="profile-icon">W</div>
                 <div class="profile-name">Walter</div>
             </div>
@@ -359,7 +456,7 @@
                 <div class="profile-icon">N</div>
                 <div class="profile-name">Nalani</div>
             </div>
-            <div class="profile" data-profile="Omari" data-song="omaris_mp4">
+            <div class="profile" data-profile="Omari" data-song="Marvel's Spidey and his Amazing Friends Theme Song Music Video @Disney Junior.mp3">
                 <div class="profile-icon">O</div>
                 <div class="profile-name">Omari</div>
             </div>
@@ -376,20 +473,51 @@
             
             <div class="mouth-container">
                 <div class="mouth">
-                    <div class="quadrant top-left" data-quadrant="top-left">
-                        Top Left<br>30 seconds
+                    <div class="teeth-container">
+                        <!-- Top Row (Upper Jaw) -->
+                        <div class="teeth-row top-row">
+                            <!-- Top Left Quadrant -->
+                            <div class="quadrant top-left" data-quadrant="top-left">
+                                <div class="tooth t1"></div>
+                                <div class="tooth t2"></div>
+                                <div class="tooth t3"></div>
+                                <div class="tooth t4"></div>
+                            </div>
+                            
+                            <!-- Top Right Quadrant -->
+                            <div class="quadrant top-right" data-quadrant="top-right">
+                                <div class="tooth t1"></div>
+                                <div class="tooth t2"></div>
+                                <div class="tooth t3"></div>
+                                <div class="tooth t4"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Bottom Row (Lower Jaw) -->
+                        <div class="teeth-row bottom-row">
+                            <!-- Bottom Left Quadrant -->
+                            <div class="quadrant bottom-left" data-quadrant="bottom-left">
+                                <div class="tooth t1"></div>
+                                <div class="tooth t2"></div>
+                                <div class="tooth t3"></div>
+                                <div class="tooth t4"></div>
+                            </div>
+                            
+                            <!-- Bottom Right Quadrant -->
+                            <div class="quadrant bottom-right" data-quadrant="bottom-right">
+                                <div class="tooth t1"></div>
+                                <div class="tooth t2"></div>
+                                <div class="tooth t3"></div>
+                                <div class="tooth t4"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Quadrant Labels -->
+                        <div class="quadrant-label tl">Top Left<br>30 seconds</div>
+                        <div class="quadrant-label tr">Top Right<br>30 seconds</div>
+                        <div class="quadrant-label bl">Bottom Left<br>30 seconds</div>
+                        <div class="quadrant-label br">Bottom Right<br>30 seconds</div>
                     </div>
-                    <div class="quadrant top-right" data-quadrant="top-right">
-                        Top Right<br>30 seconds
-                    </div>
-                    <div class="quadrant bottom-left" data-quadrant="bottom-left">
-                        Bottom Left<br>30 seconds
-                    </div>
-                    <div class="quadrant bottom-right" data-quadrant="bottom-right">
-                        Bottom Right<br>30 seconds
-                    </div>
-                    <div class="divider-h"></div>
-                    <div class="divider-v"></div>
                 </div>
             </div>
             
