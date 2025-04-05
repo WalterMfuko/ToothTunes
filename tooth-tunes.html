@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooth Tunes - Brush With Music</title>
+    <style>
+        :root {
+            --primary: #00bcd4;
+            --secondary: #2196f3;
+            --success: #4caf50;
+            --danger: #f44336;
+            --dark: #333;
+            --light: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            width: 100%;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            color: white;
+        }
+        
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .tooth-icon {
+            width: 40px;
+            height: 40px;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        
+        main {
+            width: 90%;
+            max-width: 800px;
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+        }
+        
+        .profiles {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .profile {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            width: 130px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .profile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .profile.active {
+            border-color: var(--primary);
+            background-color: rgba(0, 188, 212, 0.1);
+        }
+        
+        .profile-icon {
+            background-color: var(--primary);
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        
+        .player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 2rem;
+        }
+        
+        .timer {
+            font-size: 5rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+        
+        /* Interactive Teeth */
+        .mouth-container {
+            width: 300px;
+            height: 300px;
+            margin: 1rem 0;
+            position: relative;
+        }
+        
+        .mouth {
+            width: 100%;
+            height: 100%;
+            background-color: #f8f8f8;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid #ddd;
+        }
+        
+        .quadrant {
+            position: absolute;
+            width: 48%;
+            height: 48%;
+            border: 2px solid #ddd;
+            background-color: white;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 0.8rem;
+            text-align: center;
+        }
+        
+        .quadrant:hover {
+            background-color: rgba(0, 188, 212, 0.1);
+        }
+        
+        .quadrant.active {
+            background-color: rgba(0, 188, 212, 0.3);
+            color: var(--dark);
+            border-color: var(--primary);
+        }
+        
+        .quadrant.completed {
+            background-color: rgba(76, 175, 80, 0.3);
+            border-color: var(--success);
+        }
+        
+        .top-left {
+            top: 5%;
+            left: 5%;
+            border-top-left-radius: 100%;
+        }
+        
+        .top-right {
+            top: 5%;
+            right: 5%;
+            border-top-right-radius: 100%;
+        }
+        
+        .bottom-left {
+            bottom: 5%;
+            left: 5%;
+            border-bottom-left-radius: 100%;
+        }
+        
+        .bottom-right {
+            bottom: 5%;
+            right: 5%;
+            border-bottom-right-radius: 100%;
+        }
+        
+        .divider-h {
+            position: absolute;
+            width: 80%;
+            height: 2px;
+            background-color: #ddd;
+            top: 50%;
+            left: 10%;
+        }
+        
+        .divider-v {
+            position: absolute;
+            width: 2px;
+            height: 80%;
+            background-color: #ddd;
+            left: 50%;
+            top: 10%;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        button {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.start {
+            background-color: var(--success);
+        }
+        
+        button.stop {
+            background-color: var(--danger);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .instruction {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding: 0.8rem;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .song-info {
+            margin-top: 1rem;
+            text-align: center;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 1s linear;
+        }
+        
+        footer {
+            margin-top: auto;
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+        }
+        
+        @media (max-width: 600px) {
+            .profiles {
+                gap: 0.5rem;
+            }
+            
+            .profile {
+                width: 110px;
+                padding: 0.8rem;
+            }
+            
+            .timer {
+                font-size: 3.5rem;
+            }
+            
+            button {
+                padding: 0.7rem 1.5rem;
+                font-size: 1rem;
+            }
+            
+            .mouth-container {
+                width: 250px;
+                height: 250px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>
+            <svg class="tooth-icon" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12,2C7.03,2 3,6.03 3,11C3,13.92 4.5,16.49 6.67,18.71C8.08,20.12 9.89,22 12,22C14.11,22 15.92,20.12 17.33,18.71C19.5,16.49 21,13.92 21,11C21,6.03 16.97,2 12,2M12,4C14.12,4 16.07,4.74 17.62,5.97C19.55,7.67 20.75,9.75 20.75,11C20.75,13.58 19.4,15.82 17.4,17.74C16.65,18.5 15.8,19.23 14.96,19.76C13.97,20.4 12.93,20.75 12,20.75C11.07,20.75 10.03,20.4 9.04,19.76C8.2,19.23 7.35,18.5 6.6,17.74C4.6,15.82 3.25,13.58 3.25,11C3.25,9.75 4.45,7.67 6.38,5.97C7.93,4.74 9.88,4 12,4Z"/>
+            </svg>
+            Tooth Tunes
+        </h1>
+        <p>Brush your teeth to the rhythm of your favorite songs</p>
+    </header>
+    
+    <main>
+        <h2>Choose Your Profile</h2>
+        <div class="profiles" id="profiles">
+            <div class="profile" data-profile="Walter" data-song="walters.mp3">
+                <div class="profile-icon">W</div>
+                <div class="profile-name">Walter</div>
+            </div>
+            <div class="profile" data-profile="Jordan" data-song="jordans_mp4">
+                <div class="profile-icon">J</div>
+                <div class="profile-name">Jordan</div>
+            </div>
+            <div class="profile" data-profile="Malachi" data-song="KSI - Thick Of It ft. Trippie Redd.mp3">
+                <div class="profile-icon">M</div>
+                <div class="profile-name">Malachi</div>
+            </div>
+            <div class="profile" data-profile="Nalani" data-song="nalanis_mp4">
+                <div class="profile-icon">N</div>
+                <div class="profile-name">Nalani</div>
+            </div>
+            <div class="profile" data-profile="Omari" data-song="omaris_mp4">
+                <div class="profile-icon">O</div>
+                <div class="profile-name">Omari</div>
+            </div>
+        </div>
+        
+        <div class="player">
+            <div class="progress-container">
+                <div class="progress-bar" id="progress-bar"></div>
+            </div>
+            
+            <div class="timer" id="timer">02:00</div>
+            
+            <div class="instruction" id="instruction">Select a profile to begin</div>
+            
+            <div class="mouth-container">
+                <div class="mouth">
+                    <div class="quadrant top-left" data-quadrant="top-left">
+                        Top Left<br>30 seconds
+                    </div>
+                    <div class="quadrant top-right" data-quadrant="top-right">
+                        Top Right<br>30 seconds
+                    </div>
+                    <div class="quadrant bottom-left" data-quadrant="bottom-left">
+                        Bottom Left<br>30 seconds
+                    </div>
+                    <div class="quadrant bottom-right" data-quadrant="bottom-right">
+                        Bottom Right<br>30 seconds
+                    </div>
+                    <div class="divider-h"></div>
+                    <div class="divider-v"></div>
+                </div>
+            </div>
+            
+            <div class="controls">
+                <button id="start-btn" class="start" disabled>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+                    </svg>
+                    Start
+                </button>
+                <button id="stop-btn" class="stop" disabled>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M6 6H18V18H6V6Z" fill="currentColor"/>
+                    </svg>
+                    Stop
+                </button>
+            </div>
+            
+            <div class="song-info hidden" id="song-info">
+                <p>Now playing: <span id="current-song">No song selected</span></p>
+                <p>Profile: <span id="current-profile">None</span></p>
+            </div>
+            
+            <audio id="audio-player" class="hidden"></audio>
+        </div>
+    </main>
+    
+    <footer>
+        &copy; 2025 Tooth Tunes | Brush smarter, not harder!
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements
+            const profilesContainer = document.getElementById('profiles');
+            const profiles = document.querySelectorAll('.profile');
+            const startBtn = document.getElementById('start-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            const timerDisplay = document.getElementById('timer');
+            const instruction = document.getElementById('instruction');
+            const songInfo = document.getElementById('song-info');
+            const currentSong = document.getElementById('current-song');
+            const currentProfile = document.getElementById('current-profile');
+            const audioPlayer = document.getElementById('audio-player');
+            const progressBar = document.getElementById('progress-bar');
+            const quadrants = document.querySelectorAll('.quadrant');
+            
+            // Variables
+            let selectedProfile = null;
+            let selectedSong = null;
+            let timerInterval = null;
+            const totalSeconds = 120; // 2 minutes total
+            const quadrantTime = 30; // 30 seconds per quadrant
+            let remainingSeconds = totalSeconds;
+            let currentQuadrantIndex = 0;
+            let isPlaying = false;
+            const quadrantOrder = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+            
+            // Functions
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                return `${mins}:${secs}`;
+            }
+            
+            function updateQuadrants() {
+                // First, reset all quadrants
+                quadrants.forEach(q => {
+                    q.classList.remove('active');
+                    q.classList.remove('completed');
+                });
+                
+                // Calculate which quadrant we should be on based on time
+                const elapsedSeconds = totalSeconds - remainingSeconds;
+                currentQuadrantIndex = Math.min(Math.floor(elapsedSeconds / quadrantTime), 3);
+                
+                // Mark appropriate quadrants
+                for (let i = 0; i < quadrantOrder.length; i++) {
+                    const q = document.querySelector(`.quadrant.${quadrantOrder[i]}`);
+                    if (i < currentQuadrantIndex) {
+                        q.classList.add('completed');
+                    } else if (i === currentQuadrantIndex) {
+                        q.classList.add('active');
+                    }
+                }
+                
+                // Update instruction text
+                if (currentQuadrantIndex < quadrantOrder.length) {
+                    // Format the quadrant name to be more readable
+                    const quadrantName = quadrantOrder[currentQuadrantIndex]
+                        .split('-')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    instruction.textContent = `Brush ${quadrantName} Quadrant`;
+                } else {
+                    instruction.textContent = "Great job! All quadrants complete!";
+                }
+            }
+            
+            function updateTimer() {
+                if (remainingSeconds <= 0) {
+                    stopBrushing(true);
+                    playSound('complete');
+                    return;
+                }
+                
+                remainingSeconds--;
+                timerDisplay.textContent = formatTime(remainingSeconds);
+                
+                // Update progress bar
+                const progressPercent = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                
+                // Check if we need to switch quadrants
+                const elapsedSeconds = totalSeconds - remainingSeconds;
+                const newQuadrantIndex = Math.min(Math.floor(elapsedSeconds / quadrantTime), 3);
+                
+                if (newQuadrantIndex !== currentQuadrantIndex) {
+                    playSound('switch');
+                    updateQuadrants();
+                }
+            }
+            
+            function startBrushing() {
+                if (!selectedProfile || isPlaying) return;
+                
+                isPlaying = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                
+                // Reset quadrants if needed
+                currentQuadrantIndex = 0;
+                updateQuadrants();
+                
+                // Correctly set up the audio file path
+                let songPath = selectedSong;
+                // Only add extension if it doesn't already have one
+                if (!songPath.includes('.mp3') && !songPath.includes('.mp4')) {
+                    songPath = `${songPath}.mp3`; // Use .mp3 as default extension
+                }
+                
+                audioPlayer.src = songPath;
+                audioPlayer.play().catch(err => {
+                    console.error('Error playing audio:', err);
+                    alert('Could not play audio: ' + err.message);
+                    // Continue with timer even if audio can't play
+                });
+                
+                // Show song info
+                songInfo.classList.remove('hidden');
+                currentSong.textContent = songPath;
+                currentProfile.textContent = selectedProfile;
+                
+                // Start timer
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function stopBrushing(completed = false) {
+                clearInterval(timerInterval);
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                
+                // Reset UI
+                isPlaying = false;
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                
+                if (completed) {
+                    // Show completion message
+                    instruction.textContent = "Great job! All done!";
+                    instruction.style.backgroundColor = "#e8f5e9";
+                    instruction.style.color = "#4caf50";
+                    
+                    // Reset timer but keep profile selected
+                    remainingSeconds = totalSeconds;
+                    timerDisplay.textContent = formatTime(remainingSeconds);
+                    progressBar.style.width = '100%';
+                    progressBar.style.backgroundColor = '#4caf50';
+                    
+                    // Mark all quadrants as completed
+                    quadrants.forEach(q => {
+                        q.classList.remove('active');
+                        q.classList.add('completed');
+                    });
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        resetUI();
+                    }, 3000);
+                } else {
+                    resetUI();
+                }
+            }
+            
+            function resetUI() {
+                // Reset timer but keep profile selected
+                remainingSeconds = totalSeconds;
+                timerDisplay.textContent = formatTime(remainingSeconds);
+                progressBar.style.width = '0%';
+                progressBar.style.backgroundColor = 'var(--primary)';
+                
+                // Reset instruction
+                instruction.textContent = "Ready to start brushing";
+                instruction.style.backgroundColor = "#f0f8ff";
+                instruction.style.color = "inherit";
+                
+                // Reset quadrants
+                currentQuadrantIndex = 0;
+                quadrants.forEach(q => {
+                    q.classList.remove('active');
+                    q.classList.remove('completed');
+                });
+            }
+            
+            function resetAll() {
+                stopBrushing();
+                selectedProfile = null;
+                selectedSong = null;
+                
+                // Reset UI
+                profiles.forEach(profile => profile.classList.remove('active'));
+                songInfo.classList.add('hidden');
+                startBtn.disabled = true;
+                instruction.textContent = "Select a profile to begin";
+            }
+            
+            function playSound(type) {
+                // This could play different sound effects for different events
+                console.log(`Playing ${type} sound`);
+                
+                if (type === 'switch') {
+                    // Could play a gentle "ding" sound when switching quadrants
+                }
+                
+                if (type === 'complete') {
+                    // Visual indication that brushing is complete
+                    timerDisplay.style.color = '#4caf50';
+                    setTimeout(() => {
+                        timerDisplay.style.color = 'var(--dark)';
+                    }, 3000);
+                }
+            }
+            
+            // Event Listeners
+            profilesContainer.addEventListener('click', function(e) {
+                const profileElement = e.target.closest('.profile');
+                if (!profileElement) return;
+                
+                // Deselect all profiles
+                profiles.forEach(p => p.classList.remove('active'));
+                
+                // Select clicked profile
+                profileElement.classList.add('active');
+                selectedProfile = profileElement.dataset.profile;
+                selectedSong = profileElement.dataset.song;
+                
+                // Enable start button
+                startBtn.disabled = false;
+                
+                // Update instruction
+                instruction.textContent = "Ready to start brushing";
+                
+                // Reset timer
+                stopBrushing();
+            });
+            
+            // Quadrant click functionality
+            quadrants.forEach(quadrant => {
+                quadrant.addEventListener('click', function() {
+                    if (!isPlaying) return;
+                    
+                    const clickedQuadrant = this.dataset.quadrant;
+                    const clickedIndex = quadrantOrder.indexOf(clickedQuadrant);
+                    
+                    // Allow navigating to any quadrant
+                    currentQuadrantIndex = clickedIndex;
+                    remainingSeconds = totalSeconds - (currentQuadrantIndex * quadrantTime);
+                    updateQuadrants();
+                    
+                    // Update timer display
+                    timerDisplay.textContent = formatTime(remainingSeconds);
+                });
+            });
+            
+            startBtn.addEventListener('click', startBrushing);
+            stopBtn.addEventListener('click', () => stopBrushing(false));
+        });
+    </script>
+</body>
+</html>
