@@ -1,0 +1,1225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tooth Tunes - Brush With Music</title>
+    <style>
+        :root {
+            --primary: #00bcd4;
+            --secondary: #2196f3;
+            --success: #4caf50;
+            --danger: #f44336;
+            --dark: #333;
+            --light: #f5f5f5;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: var(--light);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        header {
+            background-color: white;
+            width: 100%;
+            padding: 2rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+            color: var(--dark);
+        }
+
+        .logo-container {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 1rem;
+        }
+        
+        h1, h2, h3, h4 {
+            margin-bottom: 1rem;
+        }
+        
+        .tooth-icon {
+            width: 180px;
+            height: auto;
+            vertical-align: middle;
+            margin: 0;
+        }
+        
+        main {
+            width: 90%;
+            max-width: 1100px;
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .app-layout {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+        
+        /* Profile Section */
+        .profile-section {
+            max-height: none;
+            margin-bottom: 2rem;
+        }
+        
+        .profile-controls {
+            margin-bottom: 1rem;
+        }
+        
+        .search-bar {
+            margin-bottom: 1rem;
+        }
+        
+        .search-bar input {
+            width: 100%;
+            padding: 0.5rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        
+        .category-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+            overflow-x: auto;
+        }
+        
+        .tab-btn {
+            padding: 0.5rem 1rem;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            margin-right: 0.5rem;
+            cursor: pointer;
+        }
+        
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .profiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .profile {
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            padding: 0.8rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            height: auto;
+        }
+        
+        .profile:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .profile.active {
+            border-color: var(--primary);
+            background-color: rgba(0, 188, 212, 0.1);
+        }
+        
+        .profile-full-image {
+            width: 100%;
+            height: auto;
+            border-radius: 8px;
+            max-height: 90px;
+            object-fit: cover;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 1rem 0;
+        }
+        
+        .page-btn {
+            padding: 0.3rem 0.7rem;
+            background-color: #f0f0f0;
+            border: none;
+            border-radius: 4px;
+            margin: 0 0.5rem;
+            cursor: pointer;
+        }
+        
+        #page-indicator {
+            font-size: 0.9rem;
+        }
+        
+        /* Recent Profiles */
+        .recent-profiles {
+            margin-bottom: 2rem;
+        }
+        
+        .recent-list {
+            display: flex;
+            gap: 1rem;
+            overflow-x: auto;
+            padding-bottom: 0.5rem;
+        }
+        
+        /* Brushing Area */
+        .brushing-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .player {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .timer {
+            font-size: 4rem;
+            font-weight: bold;
+            color: var(--dark);
+            margin-bottom: 1rem;
+            font-family: monospace;
+        }
+        
+        /* Interactive Teeth */
+        .mouth-container {
+            width: 90%;
+            max-width: 300px;
+            height: auto;
+            aspect-ratio: 300 / 260;
+            margin: 1rem auto;
+            position: relative;
+        }
+
+        .mouth {
+            width: 100%;
+            height: 100%;
+            background-color: #ffcdd2; /* Pink mouth interior */
+            border-radius: 40% / 30%;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 8px solid #d32f2f; /* Darker red for lips */
+            overflow: hidden;
+            box-shadow: inset 0 0 20px rgba(0,0,0,0.2);
+        }
+
+        .teeth-container {
+            width: 90%;
+            height: 80%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .teeth-row {
+            width: 100%;
+            height: 40%;
+            display: flex;
+            justify-content: center;
+            background-color: #ef9a9a; /* Gums color */
+            border-radius: 40px;
+        }
+
+        .top-row {
+            border-bottom-left-radius: 100px;
+            border-bottom-right-radius: 100px;
+        }
+
+        .bottom-row {
+            border-top-left-radius: 100px;
+            border-top-right-radius: 100px;
+        }
+
+        .quadrant {
+            width: 50%;
+            height: 100%;
+            position: relative;
+            display: flex;
+            justify-content: space-around;
+            padding: 5px 10px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .tooth {
+            width: 20%;
+            background-color: white;
+            border-radius: 3px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .top-row .tooth {
+            height: 70%;
+            margin-top: auto;
+            border-top-left-radius: 40%;
+            border-top-right-radius: 40%;
+        }
+
+        .bottom-row .tooth {
+            height: 70%;
+            margin-bottom: auto;
+            border-bottom-left-radius: 40%;
+            border-bottom-right-radius: 40%;
+        }
+
+        .quadrant:hover {
+            background-color: rgba(0, 188, 212, 0.1);
+        }
+
+        .quadrant.active {
+            background-color: rgba(0, 188, 212, 0.3);
+        }
+
+        .quadrant.active .tooth {
+            box-shadow: 0 0 8px rgba(0, 188, 212, 0.8);
+        }
+
+        .quadrant.completed {
+            background-color: rgba(76, 175, 80, 0.3);
+        }
+
+        .quadrant.completed .tooth {
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.8);
+        }
+
+        .quadrant-label {
+            position: absolute;
+            font-size: 0.7rem;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0,0,0,0.4);
+            padding: 3px 6px;
+            border-radius: 4px;
+            text-align: center;
+            pointer-events: none;
+            z-index: 2;
+        }
+
+        .quadrant-label.tl {
+            top: 5px;
+            left: 5px;
+        }
+
+        .quadrant-label.tr {
+            top: 5px;
+            right: 5px;
+        }
+
+        .quadrant-label.bl {
+            bottom: 5px;
+            left: 5px;
+        }
+
+        .quadrant-label.br {
+            bottom: 5px;
+            right: 5px;
+        }
+        
+        .instruction {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 1rem 0;
+            padding: 0.8rem;
+            background-color: #f0f8ff;
+            border-radius: 8px;
+            width: 100%;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .controls {
+            display: flex;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+        
+        button {
+            padding: 0.8rem 2rem;
+            border-radius: 50px;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.2rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background-color: var(--secondary);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        button.start {
+            background-color: var(--success);
+        }
+        
+        button.stop {
+            background-color: var(--danger);
+        }
+        
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background-color: #ddd;
+            border-radius: 4px;
+            margin-bottom: 1rem;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 100%;
+            background-color: var(--primary);
+            width: 0%;
+            transition: width 1s linear;
+        }
+        
+        .song-info {
+            margin-top: 1rem;
+            text-align: center;
+            padding: 1rem;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            width: 100%;
+        }
+        
+        .hidden {
+            display: none;
+        }
+        
+        /* Dashboard Stats */
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+        
+        .stat-card h4 {
+            font-size: 1rem;
+            color: var(--dark);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-card p {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .section-divider {
+            width: 100%;
+            height: 1px;
+            background-color: #e0e0e0;
+            margin: 1.5rem 0;
+        }
+        
+        footer {
+            margin-top: auto;
+            padding: 1rem;
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            width: 100%;
+        }
+        
+        /* Responsive Layout */
+        @media (min-width: 768px) {
+            .app-layout {
+                grid-template-columns: 350px 1fr;
+                align-items: start;
+            }
+            
+            .profile-section {
+                max-height: none;
+            }
+            
+            .brushing-area {
+                padding-left: 1rem;
+            }
+        }
+        
+        @media (max-width: 767px) {
+            main {
+                padding: 1.5rem;
+            }
+            
+            .app-layout > div + div {
+                margin-top: 2rem;
+            }
+            
+            .timer {
+                font-size: 3.5rem;
+            }
+            
+            .profiles {
+                grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+            }
+            
+            .dashboard-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .timer {
+                font-size: 3rem;
+            }
+            
+            .instruction {
+                font-size: 1rem;
+                padding: 0.6rem;
+            }
+            
+            .controls {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .tooth-icon {
+                width: 120px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-container">
+            <img src="Tooth Tunes Logo.png" alt="Tooth Tunes Logo" class="tooth-icon">
+        </div>
+        <h1>Tooth Tunes</h1>
+        <p>Brush your teeth to the rhythm of your favorite songs</p>
+    </header>
+    
+    <main>
+        <div class="app-layout">
+            <!-- Left Side: Profile Selection -->
+            <div class="sidebar">
+                <div class="profile-section">
+                    <h2>Choose Your Profile</h2>
+                    <div class="profile-controls">
+                        <div class="search-bar">
+                            <input type="text" id="profile-search" placeholder="Search profiles...">
+                        </div>
+                        <div class="category-tabs">
+                            <button class="tab-btn active" data-category="all">All</button>
+                            <button class="tab-btn" data-category="kids">Kids</button>
+                            <button class="tab-btn" data-category="adults">Adults</button>
+                            <button class="tab-btn" data-category="favorites">Favorites</button>
+                        </div>
+                    </div>
+                    
+                    <div class="profiles-container">
+                        <div class="profiles" id="profiles">
+                            <div class="profile" data-profile="Walter" data-song="Songs\Nelly Number 1.mp3">
+                                <img src="walter-profile.png" alt="Walter" class="profile-full-image">
+                            </div>
+                            <div class="profile" data-profile="Jordan" data-song="Songs\Dua Lipa - Illusion (Official Music Video).mp3">
+                                <img src="jordan-profile.png" alt="Jordan" class="profile-full-image">
+                            </div>
+                            <div class="profile" data-profile="Malachi" data-song="Bye Bye (From Mufasa_ The Lion King) (Official Video).mp3">
+                                <img src="malachi-profile.png" alt="Malachi" class="profile-full-image">
+                            </div>
+                            <div class="profile" data-profile="Nalani" data-song="Songs\Brother.mp3">
+                                <img src="nalani-profile.png" alt="Nalani" class="profile-full-image">
+                            </div>
+                            <div class="profile" data-profile="Omari" data-song="Songs\Marvel's Spidey and his Amazing Friends Theme Song Music Video @Disney Junior.mp3">
+                                <img src="omari-profile.png" alt="Omari" class="profile-full-image">
+                            </div>
+                            <div class="profile" data-profile="Guest" data-song="Songs\Brother.mp3">
+                                <img src="guest-profile.png" alt="Guest" class="profile-full-image">
+                            </div>
+                        </div>
+                        <div class="pagination">
+                            <button class="page-btn" id="prev-page">◀</button>
+                            <span id="page-indicator">Page 1 of 5</span>
+                            <button class="page-btn" id="next-page">▶</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="recent-profiles">
+                    <h3>Recently Used</h3>
+                    <div class="recent-list">
+                        <!-- Recent profiles will appear here -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Right Side: Brushing Timer and Controls -->
+            <div class="brushing-area">
+                <div class="player">
+                    <div class="progress-container">
+                        <div class="progress-bar" id="progress-bar"></div>
+                    </div>
+                    
+                    <div class="timer" id="timer">02:00</div>
+                    
+                    <div class="instruction" id="instruction">Select a profile to begin</div>
+                    
+                    <div class="mouth-container">
+                        <div class="mouth">
+                            <div class="teeth-container">
+                                <!-- Top Row (Upper Jaw) -->
+                                <div class="teeth-row top-row">
+                                    <!-- Top Left Quadrant -->
+                                    <div class="quadrant top-left" data-quadrant="top-left">
+                                        <div class="tooth t1"></div>
+                                        <div class="tooth t2"></div>
+                                        <div class="tooth t3"></div>
+                                        <div class="tooth t4"></div>
+                                    </div>
+                                    
+                                    <!-- Top Right Quadrant -->
+                                    <div class="quadrant top-right" data-quadrant="top-right">
+                                        <div class="tooth t1"></div>
+                                        <div class="tooth t2"></div>
+                                        <div class="tooth t3"></div>
+                                        <div class="tooth t4"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Bottom Row (Lower Jaw) -->
+                                <div class="teeth-row bottom-row">
+                                    <!-- Bottom Left Quadrant -->
+                                    <div class="quadrant bottom-left" data-quadrant="bottom-left">
+                                        <div class="tooth t1"></div>
+                                        <div class="tooth t2"></div>
+                                        <div class="tooth t3"></div>
+                                        <div class="tooth t4"></div>
+                                    </div>
+                                    
+                                    <!-- Bottom Right Quadrant -->
+                                    <div class="quadrant bottom-right" data-quadrant="bottom-right">
+                                        <div class="tooth t1"></div>
+                                        <div class="tooth t2"></div>
+                                        <div class="tooth t3"></div>
+                                        <div class="tooth t4"></div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Quadrant Labels -->
+                                <div class="quadrant-label tl">Top Left<br>30 seconds</div>
+                                <div class="quadrant-label tr">Top Right<br>30 seconds</div>
+                                <div class="quadrant-label bl">Bottom Left<br>30 seconds</div>
+                                <div class="quadrant-label br">Bottom Right<br>30 seconds</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="controls">
+                        <button id="start-btn" class="start" disabled>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M8 5V19L19 12L8 5Z" fill="currentColor"/>
+                            </svg>
+                            Start
+                        </button>
+                        <button id="stop-btn" class="stop" disabled>
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M6 6H18V18H6V6Z" fill="currentColor"/>
+                            </svg>
+                            Stop
+                        </button>
+                    </div>
+                    
+                    <div class="song-info hidden" id="song-info">
+                        <p>Now playing: <span id="current-song">No song selected</span></p>
+                        <p>Profile: <span id="current-profile">None</span></p>
+                    </div>
+                    
+                    <audio id="audio-player" class="hidden"></audio>
+                </div>
+
+                <div class="dashboard-stats">
+                    <div class="stat-card">
+                        <h4>Brushing Streak</h4>
+                        <p><span id="streak-count">5</span> days</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Total Time</h4>
+                        <p><span id="total-time">47</span> minutes</p>
+                    </div>
+                    <div class="stat-card">
+                        <h4>Level</h4>
+                        <p><span id="user-level">Brushing Pro</span></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <footer>
+        &copy; 2025 Tooth Tunes | Brush smarter, not harder!
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // DOM Elements - MUST come first
+            const profilesContainer = document.getElementById('profiles');
+            const profiles = document.querySelectorAll('.profile');
+            const startBtn = document.getElementById('start-btn');
+            const stopBtn = document.getElementById('stop-btn');
+            const timerDisplay = document.getElementById('timer');
+            const instruction = document.getElementById('instruction');
+            const songInfo = document.getElementById('song-info');
+            const currentSong = document.getElementById('current-song');
+            const currentProfile = document.getElementById('current-profile');
+            const audioPlayer = document.getElementById('audio-player');
+            const progressBar = document.getElementById('progress-bar');
+            const quadrants = document.querySelectorAll('.quadrant');
+            
+            // Variables
+            let selectedProfile = null;
+            let selectedSong = null;
+            let timerInterval = null;
+            const totalSeconds = 120; // 2 minutes total
+            const quadrantTime = 30; // 30 seconds per quadrant
+            let remainingSeconds = totalSeconds;
+            let currentQuadrantIndex = 0;
+            let isPlaying = false;
+            const quadrantOrder = ['top-left', 'top-right', 'bottom-left', 'bottom-right'];
+            
+            console.log("Found profiles:", profiles.length);
+            console.log("Start button reference:", startBtn);
+            console.log("Stop button reference:", stopBtn);
+            
+            // NOW try to load the stored profile
+            const storedProfile = sessionStorage.getItem('selectedProfile');
+            console.log('Selected profile from session:', storedProfile);
+
+            // Only after everything is defined, try to use the stored profile
+            if (storedProfile) {
+                // Find and select the matching profile element
+                const profileElement = document.querySelector(`[data-profile="${storedProfile}"]`);
+                console.log('Found profile element:', profileElement);
+                if (profileElement) {
+                    profileElement.click();
+                }
+            }
+
+            // Functions
+            function formatTime(seconds) {
+                const mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                const secs = (seconds % 60).toString().padStart(2, '0');
+                return `${mins}:${secs}`;
+            }
+            
+            function updateQuadrants() {
+                // First, reset all quadrants
+                quadrants.forEach(q => {
+                    q.classList.remove('active');
+                    q.classList.remove('completed');
+                });
+                
+                // Calculate which quadrant we should be on based on time
+                const elapsedSeconds = totalSeconds - remainingSeconds;
+                currentQuadrantIndex = Math.min(Math.floor(elapsedSeconds / quadrantTime), 3);
+                
+                // Mark appropriate quadrants
+                for (let i = 0; i < quadrantOrder.length; i++) {
+                    const q = document.querySelector(`.quadrant.${quadrantOrder[i]}`);
+                    if (i < currentQuadrantIndex) {
+                        q.classList.add('completed');
+                    } else if (i === currentQuadrantIndex) {
+                        q.classList.add('active');
+                    }
+                }
+                
+                // Update instruction text
+                if (currentQuadrantIndex < quadrantOrder.length) {
+                    // Format the quadrant name to be more readable
+                    const quadrantName = quadrantOrder[currentQuadrantIndex]
+                        .split('-')
+                        .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+                        .join(' ');
+                    instruction.textContent = `Brush ${quadrantName} Quadrant`;
+                } else {
+                    instruction.textContent = "Great job! All quadrants complete!";
+                }
+            }
+            
+            function updateTimer() {
+                if (remainingSeconds <= 0) {
+                    stopBrushing(true);
+                    playSound('complete');
+                    return;
+                }
+                
+                remainingSeconds--;
+                timerDisplay.textContent = formatTime(remainingSeconds);
+                
+                // Update progress bar
+                const progressPercent = ((totalSeconds - remainingSeconds) / totalSeconds) * 100;
+                progressBar.style.width = `${progressPercent}%`;
+                
+                // Check if we need to switch quadrants
+                const elapsedSeconds = totalSeconds - remainingSeconds;
+                const newQuadrantIndex = Math.min(Math.floor(elapsedSeconds / quadrantTime), 3);
+                
+                if (newQuadrantIndex !== currentQuadrantIndex) {
+                    playSound('switch');
+                    updateQuadrants();
+                }
+            }
+            
+            function startBrushing() {
+                if (!selectedProfile || isPlaying) return;
+                
+                isPlaying = true;
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+                
+                // Reset quadrants if needed
+                currentQuadrantIndex = 0;
+                updateQuadrants();
+                
+                // Correctly set up the audio file path
+                let songPath = selectedSong;
+                // Only add extension if it doesn't already have one
+                if (!songPath.includes('.mp3') && !songPath.includes('.mp4')) {
+                    songPath = `${songPath}.mp3`; // Use .mp3 as default extension
+                }
+                
+                console.log("Trying to play:", songPath);
+                audioPlayer.addEventListener('error', function() {
+                    console.error('Audio error:', audioPlayer.error);
+                });
+                audioPlayer.src = songPath;
+                audioPlayer.play().catch(err => {
+                    console.error('Error playing audio:', err);
+                    alert('Could not play audio: ' + err.message);
+                    // Continue with timer even if audio can't play
+                });
+                
+                // Show song info
+                songInfo.classList.remove('hidden');
+                currentSong.textContent = songPath;
+                currentProfile.textContent = selectedProfile;
+                
+                // Start timer
+                timerInterval = setInterval(updateTimer, 1000);
+            }
+            
+            function stopBrushing(completed = false) {
+                clearInterval(timerInterval);
+                audioPlayer.pause();
+                audioPlayer.currentTime = 0;
+                
+                // Reset UI
+                isPlaying = false;
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                
+                if (completed) {
+                    // Show completion message
+                    instruction.textContent = "Great job! All done!";
+                    instruction.style.backgroundColor = "#e8f5e9";
+                    instruction.style.color = "#4caf50";
+                    
+                    // Update brushing stats
+                    updateBrushingStats(true);
+                    
+                    // Reset timer but keep profile selected
+                    remainingSeconds = totalSeconds;
+                    timerDisplay.textContent = formatTime(remainingSeconds);
+                    progressBar.style.width = '100%';
+                    progressBar.style.backgroundColor = '#4caf50';
+                    
+                    // Mark all quadrants as completed
+                    quadrants.forEach(q => {
+                        q.classList.remove('active');
+                        q.classList.add('completed');
+                    });
+                    
+                    // Reset after 3 seconds
+                    setTimeout(() => {
+                        resetUI();
+                    }, 3000);
+                } else {
+                    resetUI();
+                }
+            }
+            
+            function resetUI() {
+                // Reset timer but keep profile selected
+                remainingSeconds = totalSeconds;
+                timerDisplay.textContent = formatTime(remainingSeconds);
+                progressBar.style.width = '0%';
+                progressBar.style.backgroundColor = 'var(--primary)';
+                
+                // Reset instruction
+                instruction.textContent = "Ready to start brushing";
+                instruction.style.backgroundColor = "#f0f8ff";
+                instruction.style.color = "inherit";
+                
+                // Reset quadrants
+                currentQuadrantIndex = 0;
+                quadrants.forEach(q => {
+                    q.classList.remove('active');
+                    q.classList.remove('completed');
+                });
+            }
+            
+            function resetAll() {
+                stopBrushing();
+                selectedProfile = null;
+                selectedSong = null;
+                
+                // Reset UI
+                profiles.forEach(profile => profile.classList.remove('active'));
+                songInfo.classList.add('hidden');
+                startBtn.disabled = true;
+                instruction.textContent = "Select a profile to begin";
+            }
+            
+            function playSound(type) {
+                // This could play different sound effects for different events
+                console.log(`Playing ${type} sound`);
+                
+                if (type === 'switch') {
+                    // Could play a gentle "ding" sound when switching quadrants
+                }
+                
+                if (type === 'complete') {
+                    // Visual indication that brushing is complete
+                    timerDisplay.style.color = '#4caf50';
+                    setTimeout(() => {
+                        timerDisplay.style.color = 'var(--dark)';
+                    }, 3000);
+                }
+            }
+            
+            // Event Listeners
+            profilesContainer.addEventListener('click', function(e) {
+                console.log("Profile clicked:", e.target);
+                const profileEl = e.target.closest('.profile');
+                console.log("Profile element found:", profileEl);
+                if (!profileEl) return;
+                
+                // If another song is already playing, stop it first
+                if (isPlaying) {
+                    stopBrushing(false);
+                }
+                
+                // Update selected profile
+                selectedProfile = profileEl.dataset.profile;
+                selectedSong = profileEl.dataset.song;
+                
+                // Update UI
+                profiles.forEach(profile => profile.classList.remove('active'));
+                profileEl.classList.add('active');
+                instruction.textContent = "Ready to start brushing";
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+                
+                // Update song info but keep it hidden until brushing starts
+                currentProfile.textContent = selectedProfile;
+                currentSong.textContent = selectedSong;
+                
+                // Add to recent profiles
+                addToRecentProfiles(profileEl);
+            });
+            
+            startBtn.addEventListener('click', startBrushing);
+            stopBtn.addEventListener('click', () => stopBrushing(false));
+            
+            // Handle quadrant clicks for manual navigation
+            document.querySelectorAll('.quadrant').forEach(quadrant => {
+                quadrant.addEventListener('click', function() {
+                    if (!isPlaying) return;
+                    
+                    const clickedQuadrantId = this.dataset.quadrant;
+                    const newIndex = quadrantOrder.indexOf(clickedQuadrantId);
+                    
+                    if (newIndex > currentQuadrantIndex) {
+                        // Skip to next quadrant(s)
+                        const timeToSkip = (newIndex - currentQuadrantIndex) * quadrantTime;
+                        remainingSeconds = Math.max(0, remainingSeconds - timeToSkip);
+                        currentQuadrantIndex = newIndex;
+                        updateQuadrants();
+                    }
+                });
+            });
+            
+            // Tab functionality
+            document.querySelectorAll('.tab-btn').forEach(tab => {
+                tab.addEventListener('click', function() {
+                    document.querySelectorAll('.tab-btn').forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    const category = this.dataset.category;
+                    filterProfiles(category);
+                });
+            });
+            
+            // Pagination functionality
+            const prevPageBtn = document.getElementById('prev-page');
+            const nextPageBtn = document.getElementById('next-page');
+            const pageIndicator = document.getElementById('page-indicator');
+            
+            let currentPage = 1;
+            const profilesPerPage = 6;
+            let totalPages = Math.ceil(profiles.length / profilesPerPage);
+            
+            function updatePagination() {
+                pageIndicator.textContent = `Page ${currentPage} of ${totalPages}`;
+                prevPageBtn.disabled = currentPage <= 1;
+                nextPageBtn.disabled = currentPage >= totalPages;
+                
+                // Show/hide profiles based on current page
+                profiles.forEach((profile, index) => {
+                    const startIdx = (currentPage - 1) * profilesPerPage;
+                    const endIdx = startIdx + profilesPerPage - 1;
+                    
+                    if (index >= startIdx && index <= endIdx) {
+                        profile.style.display = '';
+                    } else {
+                        profile.style.display = 'none';
+                    }
+                });
+            }
+            
+            prevPageBtn.addEventListener('click', function() {
+                if (currentPage > 1) {
+                    currentPage--;
+                    updatePagination();
+                }
+            });
+            
+            nextPageBtn.addEventListener('click', function() {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    updatePagination();
+                }
+            });
+            
+            // Search functionality
+            const searchInput = document.getElementById('profile-search');
+            searchInput.addEventListener('input', function() {
+                const searchTerm = this.value.toLowerCase();
+                
+                // Filter profiles based on search term
+                profiles.forEach(profile => {
+                    const profileName = profile.dataset.profile.toLowerCase();
+                    if (profileName.includes(searchTerm)) {
+                        profile.style.display = '';
+                    } else {
+                        profile.style.display = 'none';
+                    }
+                });
+                
+                // Reset pagination if searching
+                if (searchTerm) {
+                    currentPage = 1;
+                    // Count visible profiles and update total pages
+                    const visibleProfiles = Array.from(profiles).filter(p => p.style.display !== 'none');
+                    totalPages = Math.max(1, Math.ceil(visibleProfiles.length / profilesPerPage));
+                } else {
+                    totalPages = Math.ceil(profiles.length / profilesPerPage);
+                }
+                
+                updatePagination();
+            });
+            
+            function filterProfiles(category) {
+                profiles.forEach(profile => {
+                    if (category === 'all' || profile.classList.contains(category)) {
+                        profile.style.display = '';
+                    } else {
+                        profile.style.display = 'none';
+                    }
+                });
+                
+                // Reset pagination
+                currentPage = 1;
+                const visibleProfiles = Array.from(profiles).filter(p => p.style.display !== 'none');
+                totalPages = Math.max(1, Math.ceil(visibleProfiles.length / profilesPerPage));
+                updatePagination();
+            }
+            
+            function addToRecentProfiles(profileEl) {
+                const recentList = document.querySelector('.recent-list');
+                const profileClone = profileEl.cloneNode(true);
+                profileClone.classList.add('recent');
+                
+                // Check if this profile is already in the recent list
+                const existingRecent = Array.from(recentList.children).find(
+                    el => el.dataset.profile === profileEl.dataset.profile
+                );
+                
+                if (existingRecent) {
+                    // Remove the existing entry
+                    existingRecent.remove();
+                }
+                
+                // Add to the beginning of the recent list
+                if (recentList.firstChild) {
+                    recentList.insertBefore(profileClone, recentList.firstChild);
+                } else {
+                    recentList.appendChild(profileClone);
+                }
+                
+                // Limit to 5 recent profiles
+                if (recentList.children.length > 5) {
+                    recentList.lastChild.remove();
+                }
+            }
+            
+            // Make recent profiles clickable
+            document.querySelector('.recent-list').addEventListener('click', function(e) {
+                const profileEl = e.target.closest('.profile');
+                if (!profileEl) return;
+                
+                // Find the original profile and click it
+                const originalProfile = Array.from(profiles).find(
+                    p => p.dataset.profile === profileEl.dataset.profile
+                );
+                
+                if (originalProfile) {
+                    originalProfile.click();
+                }
+            });
+            
+            // Initialize stats on page load
+            loadBrushingStats();
+
+            // Initialize the UI
+            updatePagination();
+            resetAll();
+
+            // Stats functions should be moved here from the bottom of the file
+            function loadBrushingStats() {
+                // Load stats from localStorage or use defaults
+                const stats = JSON.parse(localStorage.getItem('brushingStats')) || {
+                    streak: 0,
+                    totalTime: 0, // in seconds
+                    level: 'Rookie Brusher',
+                    lastBrushed: null
+                };
+                
+                // Update UI with loaded stats
+                document.getElementById('streak-count').textContent = stats.streak;
+                document.getElementById('total-time').textContent = Math.round(stats.totalTime / 60); // Convert to minutes
+                document.getElementById('user-level').textContent = stats.level;
+                
+                return stats;
+            }
+            
+            function saveBrushingStats(stats) {
+                localStorage.setItem('brushingStats', JSON.stringify(stats));
+            }
+            
+            function updateBrushingStats(completedBrushing = false) {
+                // Now totalSeconds is in scope
+                const stats = loadBrushingStats();
+                const today = new Date().toDateString();
+                
+                if (completedBrushing) {
+                    // Add this brushing session (2 minutes)
+                    stats.totalTime += totalSeconds;
+                    
+                    // Update streak
+                    if (stats.lastBrushed) {
+                        const yesterday = new Date();
+                        yesterday.setDate(yesterday.getDate() - 1);
+                        const yesterdayString = yesterday.toDateString();
+                        
+                        if (stats.lastBrushed === today) {
+                            // Already brushed today, no change to streak
+                        } else if (stats.lastBrushed === yesterdayString) {
+                            // Brushed yesterday, continue streak
+                            stats.streak += 1;
+                        } else {
+                            // Missed a day, reset streak
+                            stats.streak = 1;
+                        }
+                    } else {
+                        // First time brushing
+                        stats.streak = 1;
+                    }
+                    
+                    // Update last brushed date
+                    stats.lastBrushed = today;
+                    
+                    // Update level based on total brushing time
+                    if (stats.totalTime >= 7200) { // 120 minutes (60 sessions)
+                        stats.level = 'Brushing Master';
+                    } else if (stats.totalTime >= 3600) { // 60 minutes (30 sessions)
+                        stats.level = 'Brushing Expert';
+                    } else if (stats.totalTime >= 1200) { // 20 minutes (10 sessions)
+                        stats.level = 'Brushing Pro';
+                    } else if (stats.totalTime >= 600) { // 10 minutes (5 sessions)
+                        stats.level = 'Consistent Brusher';
+                    } else {
+                        stats.level = 'Rookie Brusher';
+                    }
+                    
+                    // Save updated stats
+                    saveBrushingStats(stats);
+                    
+                    // Update UI
+                    document.getElementById('streak-count').textContent = stats.streak;
+                    document.getElementById('total-time').textContent = Math.round(stats.totalTime / 60); // Convert to minutes
+                    document.getElementById('user-level').textContent = stats.level;
+                }
+                
+                return stats;
+            }
+        });
+    </script>
+</body>
+</html>
