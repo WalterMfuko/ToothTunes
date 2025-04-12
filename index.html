@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Welcome to Tooth Tunes</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.5.0/firebase-firestore-compat.js"></script>
     <style>
         :root {
             --primary: #00bcd4;
@@ -14,157 +18,307 @@
             --light: #f5f5f5;
         }
         
-        * {
+        body {
             margin: 0;
             padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-        
-        body {
-            background-color: #ffffff;
+            font-family: Arial, sans-serif;
             min-height: 100vh;
             display: flex;
-            flex-direction: column;
-            align-items: center;
             justify-content: center;
+            align-items: center;
+            background-color: var(--light);
         }
         
         .landing-container {
-            max-width: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
             text-align: center;
-            padding: 2rem;
         }
         
         .logo-container {
-            margin-bottom: 3rem;
-            animation: fadeInDown 1.2s ease-out;
+            display: flex;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 20px;
         }
         
         .logo {
-            width: 280px;
+            max-width: 250px;
             height: auto;
-            margin-bottom: 1.5rem;
         }
         
         .motto {
-            font-size: 1.5rem;
-            color: var(--dark);
-            margin-bottom: 3rem;
-            animation: fadeIn 1.5s ease-out;
-        }
-        
-        .profile-select-container {
-            margin-top: 2rem;
-            animation: fadeInUp 1.2s ease-out;
-            width: 100%;
-            max-width: 320px;
-            margin: 0 auto;
-        }
-        
-        .profile-select-label {
             font-size: 1.2rem;
             color: var(--dark);
-            margin-bottom: 1rem;
-            display: block;
+            margin-bottom: 30px;
+            text-align: center;
+            width: 100%;
         }
         
-        .profile-select {
+        .auth-container {
+            display: flex;
+            flex-direction: column;
             width: 100%;
-            padding: 1rem;
+            max-width: 320px;
+            margin: 0 auto 2rem auto;
+            animation: fadeIn 1.2s ease-out;
+        }
+        
+        .auth-tabs {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        
+        .auth-tab {
+            flex: 1;
+            padding: 0.75rem;
+            text-align: center;
+            background-color: #eee;
+            cursor: pointer;
+            border-radius: 5px 5px 0 0;
+        }
+        
+        .auth-tab.active {
+            background-color: var(--primary);
+            color: white;
+        }
+        
+        .auth-form {
+            display: none;
+            flex-direction: column;
+        }
+        
+        .auth-form.active {
+            display: flex;
+        }
+        
+        .form-group {
+            margin-bottom: 1rem;
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: 0.8rem;
             border-radius: 50px;
             border: 2px solid var(--primary);
-            font-size: 1.1rem;
-            color: var(--dark);
-            background-color: white;
-            cursor: pointer;
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300bcd4' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            background-size: 1.5em;
-            padding-right: 3rem;
-            text-align-last: center;
+            font-size: 1rem;
         }
         
-        .profile-select:focus {
+        .form-input:focus {
             outline: none;
             border-color: var(--secondary);
             box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.3);
         }
         
-        .continue-btn {
-            margin-top: 2rem;
-            padding: 1rem 2.5rem;
+        .auth-btn {
+            padding: 0.8rem;
             background-color: var(--primary);
             color: white;
             border: none;
             border-radius: 50px;
-            font-size: 1.2rem;
-            font-weight: 600;
+            font-size: 1.1rem;
             cursor: pointer;
             transition: all 0.3s ease;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
         }
         
-        .continue-btn:hover {
+        .auth-btn:hover {
             background-color: var(--secondary);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
         }
         
-        .continue-btn:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            box-shadow: none;
-            transform: none;
+        .auth-message {
+            margin-top: 1rem;
+            color: var(--danger);
+            font-size: 0.9rem;
+            text-align: center;
+            min-height: 20px;
         }
         
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .profile-create-container {
+            display: none;
+            animation: fadeIn 1.2s ease-out;
+            width: 100%;
+            max-width: 320px;
+            margin: 0 auto;
+            flex-direction: column;
+            align-items: center;
         }
         
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(40px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .profile-select-container {
+            width: 100%;
+            max-width: 320px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .profile-select {
+            width: 100%;
+            padding: 0.8rem;
+            border-radius: 50px;
+            border: 2px solid var(--primary);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+        }
+        
+        .profile-select-label {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--dark);
+        }
+        
+        .continue-btn {
+            padding: 0.8rem;
+            width: 100%;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
         }
         
         @keyframes fadeIn {
             from {
                 opacity: 0;
+                transform: translateY(20px);
             }
             to {
                 opacity: 1;
+                transform: translateY(0);
             }
         }
         
-        @media (max-width: 600px) {
-            .landing-container {
-                padding: 1.5rem;
-            }
-            
-            .logo {
-                width: 220px;
-            }
-            
-            .motto {
-                font-size: 1.3rem;
-            }
+        .profile-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 320px;
+            margin-bottom: 20px;
+        }
+        
+        .profile-card {
+            border-radius: 15px;
+            padding: 15px;
+            background-color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.2s ease;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .profile-card.selected {
+            border-color: var(--primary);
+            transform: translateY(-5px);
+        }
+        
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-bottom: 10px;
+            border: 2px solid var(--primary);
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .profile-name {
+            font-weight: bold;
+            color: var(--dark);
+            font-size: 1.1rem;
+        }
+        
+        .pin-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+            animation: fadeIn 0.5s ease;
+            width: 100%;
+        }
+        
+        .pin-display {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+        
+        .pin-circle {
+            width: 15px;
+            height: 15px;
+            border-radius: 50%;
+            background-color: #ddd;
+            margin: 0 5px;
+        }
+        
+        .pin-circle.filled {
+            background-color: var(--primary);
+        }
+        
+        .pin-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            width: 80%;
+            max-width: 250px;
+        }
+        
+        .pin-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .pin-button:hover {
+            background-color: var(--secondary);
+            transform: scale(1.05);
+        }
+        
+        .pin-button:active {
+            transform: scale(0.95);
+        }
+        
+        .parent-login-link {
+            margin-top: 20px;
+            color: var(--secondary);
+            text-decoration: underline;
+            cursor: pointer;
+        }
+        
+        .avatar-selection {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin: 15px 0;
+        }
+        
+        .avatar-option {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            background-size: cover;
+            background-position: center;
+        }
+        
+        .avatar-option.selected {
+            border-color: var(--primary);
+            transform: scale(1.1);
         }
     </style>
 </head>
@@ -178,47 +332,469 @@
             Brush your teeth to the rhythm of your favorite songs
         </div>
         
-        <div class="profile-select-container">
-            <label for="profile-select" class="profile-select-label">Choose Your Profile</label>
-            <select id="profile-select" class="profile-select">
-                <option value="" disabled selected>Select a profile...</option>
-                <option value="Walter">Walter</option>
-                <option value="Jordan">Jordan</option>
-                <option value="Malachi">Malachi</option>
-                <option value="Nalani">Nalani</option>
-                <option value="Omari">Omari</option>
-                <option value="Guest">Guest</option>
-            </select>
+        <!-- Authentication Container -->
+        <div class="auth-container" id="auth-container">
+            <div class="auth-tabs">
+                <div class="auth-tab active" data-tab="login">Login</div>
+                <div class="auth-tab" data-tab="signup">Sign Up</div>
+            </div>
             
-            <button id="continue-btn" class="continue-btn" disabled>Continue</button>
+            <!-- Login Form -->
+            <div class="auth-form active" id="login-form">
+                <div class="form-group">
+                    <input type="email" class="form-input" id="login-email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="login-password" placeholder="Password">
+                </div>
+                <button class="auth-btn" id="login-btn">Login</button>
+                <div class="auth-message" id="login-message"></div>
+            </div>
+            
+            <!-- Signup Form -->
+            <div class="auth-form" id="signup-form">
+                <div class="form-group">
+                    <input type="email" class="form-input" id="signup-email" placeholder="Email">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="signup-password" placeholder="Password">
+                </div>
+                <div class="form-group">
+                    <input type="password" class="form-input" id="confirm-password" placeholder="Confirm Password">
+                </div>
+                <button class="auth-btn" id="signup-btn">Sign Up</button>
+                <div class="auth-message" id="signup-message"></div>
+            </div>
+        </div>
+        
+        <!-- Create Profile Container with avatar selection -->
+        <div class="profile-create-container" id="profile-create-container">
+            <label for="profile-name" class="profile-select-label">Create a Profile</label>
+            <div class="form-group">
+                <input type="text" class="form-input" id="profile-name" placeholder="Profile Name">
+            </div>
+            
+            <label class="profile-select-label">Choose an Avatar</label>
+            <div class="avatar-selection" id="avatar-selection">
+                <div class="avatar-option" style="background-image: url('https://i.pravatar.cc/150?img=1')" data-avatar="1"></div>
+                <div class="avatar-option" style="background-image: url('https://i.pravatar.cc/150?img=2')" data-avatar="2"></div>
+                <div class="avatar-option" style="background-image: url('https://i.pravatar.cc/150?img=3')" data-avatar="3"></div>
+                <div class="avatar-option" style="background-image: url('https://i.pravatar.cc/150?img=4')" data-avatar="4"></div>
+                <div class="avatar-option" style="background-image: url('https://i.pravatar.cc/150?img=5')" data-avatar="5"></div>
+                <div class="avatar-option" style="background-image: url('https://i.pravatar.cc/150?img=6')" data-avatar="6"></div>
+            </div>
+            
+            <label class="profile-select-label">Create a PIN (optional)</label>
+            <div class="form-group">
+                <input type="password" class="form-input" id="profile-pin" placeholder="4-digit PIN" maxlength="4" inputmode="numeric" pattern="[0-9]*">
+            </div>
+            
+            <button class="continue-btn" id="create-profile-btn">Create Profile</button>
+        </div>
+        
+        <!-- Kid friendly profile selection UI -->
+        <div class="profile-select-container" id="profile-select-container" style="display: none;">
+            <label class="profile-select-label">Who's brushing teeth today?</label>
+            
+            <div class="profile-grid" id="profile-grid">
+                <!-- Profiles will be added dynamically -->
+            </div>
+            
+            <div class="pin-container" id="pin-container">
+                <label class="profile-select-label">Enter your PIN</label>
+                
+                <div class="pin-display" id="pin-display">
+                    <div class="pin-circle"></div>
+                    <div class="pin-circle"></div>
+                    <div class="pin-circle"></div>
+                    <div class="pin-circle"></div>
+                </div>
+                
+                <div class="pin-pad">
+                    <button class="pin-button" data-num="1">1</button>
+                    <button class="pin-button" data-num="2">2</button>
+                    <button class="pin-button" data-num="3">3</button>
+                    <button class="pin-button" data-num="4">4</button>
+                    <button class="pin-button" data-num="5">5</button>
+                    <button class="pin-button" data-num="6">6</button>
+                    <button class="pin-button" data-num="7">7</button>
+                    <button class="pin-button" data-num="8">8</button>
+                    <button class="pin-button" data-num="9">9</button>
+                    <button class="pin-button" style="background-color: var(--danger);" data-num="clear">X</button>
+                    <button class="pin-button" data-num="0">0</button>
+                    <button class="pin-button" style="background-color: var(--success);" data-num="ok">✓</button>
+                </div>
+            </div>
+            
+            <div class="parent-login-link" id="parent-login-link">Parent Login</div>
         </div>
     </div>
 
     <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyCm6lrPXrMfGtY8T89JRVfBJsDjWskmvkg",
+            authDomain: "tooth-tunes.firebaseapp.com",
+            projectId: "tooth-tunes",
+            storageBucket: "tooth-tunes.firebasestorage.app",
+            messagingSenderId: "678701230644",
+            appId: "1:678701230644:web:bbdc1c40574b3d75bdf861",
+            measurementId: "G-DR38XHD6CY"
+        };
+
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        
         document.addEventListener('DOMContentLoaded', function() {
+            // Auth elements
+            const authTabs = document.querySelectorAll('.auth-tab');
+            const authForms = document.querySelectorAll('.auth-form');
+            const authContainer = document.getElementById('auth-container');
+            const profileSelectContainer = document.getElementById('profile-select-container');
+            const profileCreateContainer = document.getElementById('profile-create-container');
+            
+            // Login elements
+            const loginBtn = document.getElementById('login-btn');
+            const loginEmail = document.getElementById('login-email');
+            const loginPassword = document.getElementById('login-password');
+            const loginMessage = document.getElementById('login-message');
+            
+            // Signup elements
+            const signupBtn = document.getElementById('signup-btn');
+            const signupEmail = document.getElementById('signup-email');
+            const signupPassword = document.getElementById('signup-password');
+            const confirmPassword = document.getElementById('confirm-password');
+            const signupMessage = document.getElementById('signup-message');
+            
+            // Profile elements
             const profileSelect = document.getElementById('profile-select');
             const continueBtn = document.getElementById('continue-btn');
+            const addProfileBtn = document.getElementById('add-profile-btn');
+            const logoutBtn = document.getElementById('logout-btn');
+            const createProfileBtn = document.getElementById('create-profile-btn');
+            const profileNameInput = document.getElementById('profile-name');
             
-            // Enable the button only when a profile is selected
-            profileSelect.addEventListener('change', function() {
-                if (this.value) {
-                    continueBtn.disabled = false;
-                } else {
-                    continueBtn.disabled = true;
-                }
+            // Tab switching
+            authTabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    const tabId = tab.getAttribute('data-tab');
+                    
+                    // Update active tab
+                    authTabs.forEach(t => t.classList.remove('active'));
+                    tab.classList.add('active');
+                    
+                    // Update active form
+                    authForms.forEach(form => form.classList.remove('active'));
+                    document.getElementById(`${tabId}-form`).classList.add('active');
+                });
             });
             
-            // Handle continue button click
-            continueBtn.addEventListener('click', function() {
-                const selectedProfile = profileSelect.value;
-                if (selectedProfile) {
-                    // Store the selected profile in session storage
-                    sessionStorage.setItem('selectedProfile', selectedProfile);
-                    // Redirect to the main app page
-                    window.location.href = 'app.html';
+            // Login functionality
+            loginBtn.addEventListener('click', () => {
+                const email = loginEmail.value.trim();
+                const password = loginPassword.value;
+                
+                if (!email || !password) {
+                    loginMessage.textContent = "Please enter both email and password";
+                    return;
+                }
+                
+                firebase.auth().signInWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        loginMessage.textContent = "";
+                        // User signed in successfully
+                        loadUserProfiles(userCredential.user.uid);
+                    })
+                    .catch((error) => {
+                        loginMessage.textContent = error.message;
+                    });
+            });
+            
+            // Signup functionality
+            signupBtn.addEventListener('click', () => {
+                const email = signupEmail.value.trim();
+                const password = signupPassword.value;
+                const confirmPwd = confirmPassword.value;
+                
+                if (!email || !password || !confirmPwd) {
+                    signupMessage.textContent = "Please fill in all fields";
+                    return;
+                }
+                
+                if (password !== confirmPwd) {
+                    signupMessage.textContent = "Passwords do not match";
+                    return;
+                }
+                
+                firebase.auth().createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        signupMessage.textContent = "";
+                        // Show profile creation for new users
+                        authContainer.style.display = 'none';
+                        profileCreateContainer.style.display = 'flex';
+                    })
+                    .catch((error) => {
+                        signupMessage.textContent = error.message;
+                    });
+            });
+            
+            // Avatar selection
+            const avatarSelection = document.getElementById('avatar-selection');
+            let selectedAvatar = null;
+            
+            if (avatarSelection) {
+                const avatarOptions = avatarSelection.querySelectorAll('.avatar-option');
+                avatarOptions.forEach(option => {
+                    option.addEventListener('click', function() {
+                        avatarOptions.forEach(opt => opt.classList.remove('selected'));
+                        this.classList.add('selected');
+                        selectedAvatar = this.getAttribute('data-avatar');
+                    });
+                });
+            }
+            
+            // Enhanced create profile functionality with avatar and PIN
+            if (createProfileBtn) {
+                createProfileBtn.addEventListener('click', () => {
+                    const profileName = profileNameInput.value.trim();
+                    const profilePin = document.getElementById('profile-pin')?.value.trim() || '';
+                    
+                    if (!profileName) {
+                        alert('Please enter a profile name');
+                        return;
+                    }
+                    
+                    if (!selectedAvatar) {
+                        alert('Please select an avatar');
+                        return;
+                    }
+                    
+                    if (profilePin && (profilePin.length !== 4 || !/^\d+$/.test(profilePin))) {
+                        alert('PIN must be 4 digits');
+                        return;
+                    }
+                    
+                    const user = firebase.auth().currentUser;
+                    if (!user) {
+                        alert('No authenticated user found');
+                        return;
+                    }
+                    
+                    // Add profile to Firestore with avatar and PIN
+                    firebase.firestore().collection('users').doc(user.uid)
+                        .collection('profiles').add({
+                            name: profileName,
+                            avatar: selectedAvatar,
+                            pin: profilePin, // Store PIN only if provided
+                            createdAt: new Date()
+                        })
+                        .then(() => {
+                            profileNameInput.value = '';
+                            document.getElementById('profile-pin').value = '';
+                            selectedAvatar = null;
+                            avatarOptions.forEach(opt => opt.classList.remove('selected'));
+                            profileCreateContainer.style.display = 'none';
+                            loadUserProfiles(user.uid);
+                        })
+                        .catch(error => {
+                            alert('Error creating profile: ' + error.message);
+                        });
+                });
+            }
+            
+            // Enhanced load user profiles function for visual profile selection
+            function loadUserProfiles(userId) {
+                const profileGrid = document.getElementById('profile-grid');
+                
+                // Clear existing profiles
+                if (profileGrid) {
+                    profileGrid.innerHTML = '';
+                }
+                
+                firebase.firestore().collection('users').doc(userId)
+                    .collection('profiles').get()
+                    .then((querySnapshot) => {
+                        if (querySnapshot.empty) {
+                            // No profiles yet, show create profile form
+                            authContainer.style.display = 'none';
+                            profileCreateContainer.style.display = 'flex';
+                            profileSelectContainer.style.display = 'none';
+                        } else {
+                            // Show kid-friendly profile selection
+                            authContainer.style.display = 'none';
+                            profileCreateContainer.style.display = 'none';
+                            profileSelectContainer.style.display = 'flex';
+                            
+                            // Add profiles to grid
+                            querySnapshot.forEach((doc) => {
+                                const profile = doc.data();
+                                const profileCard = document.createElement('div');
+                                profileCard.classList.add('profile-card');
+                                profileCard.dataset.profileId = doc.id;
+                                profileCard.dataset.hasPin = profile.pin ? 'true' : 'false';
+                                if (profile.pin) {
+                                    profileCard.dataset.pin = profile.pin;
+                                }
+                                
+                                const avatar = document.createElement('div');
+                                avatar.classList.add('profile-avatar');
+                                avatar.style.backgroundImage = `url('https://i.pravatar.cc/150?img=${profile.avatar || 1}')`;
+                                
+                                const name = document.createElement('div');
+                                name.classList.add('profile-name');
+                                name.textContent = profile.name;
+                                
+                                profileCard.appendChild(avatar);
+                                profileCard.appendChild(name);
+                                profileGrid.appendChild(profileCard);
+                                
+                                // Profile selection logic
+                                profileCard.addEventListener('click', function() {
+                                    const profileId = this.dataset.profileId;
+                                    const profileName = this.querySelector('.profile-name').textContent;
+                                    const hasPin = this.dataset.hasPin === 'true';
+                                    
+                                    // Remove selection from all cards
+                                    document.querySelectorAll('.profile-card').forEach(card => {
+                                        card.classList.remove('selected');
+                                    });
+                                    
+                                    // Select this card
+                                    this.classList.add('selected');
+                                    
+                                    if (hasPin) {
+                                        // Show PIN entry
+                                        document.getElementById('pin-container').style.display = 'flex';
+                                        currentPinAttempt = '';
+                                        updatePinDisplay();
+                                        
+                                        // Store target pin for verification
+                                        document.getElementById('pin-container').dataset.targetPin = this.dataset.pin;
+                                        document.getElementById('pin-container').dataset.profileId = profileId;
+                                        document.getElementById('pin-container').dataset.profileName = profileName;
+                                    } else {
+                                        // No PIN, proceed immediately
+                                        proceedWithProfile(profileId, profileName);
+                                    }
+                                });
+                            });
+                            
+                            // Add "Add New Profile" card
+                            const addCard = document.createElement('div');
+                            addCard.classList.add('profile-card');
+                            addCard.style.backgroundColor = 'var(--light)';
+                            
+                            const plusIcon = document.createElement('div');
+                            plusIcon.classList.add('profile-avatar');
+                            plusIcon.innerHTML = '<div style="font-size: 40px; line-height: 80px; text-align: center; color: var(--primary);">+</div>';
+                            plusIcon.style.border = '2px dashed var(--primary)';
+                            plusIcon.style.backgroundColor = 'transparent';
+                            
+                            const addText = document.createElement('div');
+                            addText.classList.add('profile-name');
+                            addText.textContent = 'New Profile';
+                            
+                            addCard.appendChild(plusIcon);
+                            addCard.appendChild(addText);
+                            profileGrid.appendChild(addCard);
+                            
+                            addCard.addEventListener('click', () => {
+                                profileSelectContainer.style.display = 'none';
+                                profileCreateContainer.style.display = 'flex';
+                            });
+                        }
+                    })
+                    .catch((error) => {
+                        alert('Error loading profiles: ' + error.message);
+                    });
+            }
+            
+            // PIN entry logic
+            const pinButtons = document.querySelectorAll('.pin-button');
+            let currentPinAttempt = '';
+            
+            pinButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    const value = this.getAttribute('data-num');
+                    const pinContainer = document.getElementById('pin-container');
+                    const targetPin = pinContainer.dataset.targetPin;
+                    const profileId = pinContainer.dataset.profileId;
+                    const profileName = pinContainer.dataset.profileName;
+                    
+                    if (value === 'clear') {
+                        // Clear PIN
+                        currentPinAttempt = '';
+                    } else if (value === 'ok') {
+                        // Verify PIN
+                        if (currentPinAttempt === targetPin) {
+                            // Correct PIN
+                            proceedWithProfile(profileId, profileName);
+                        } else {
+                            // Wrong PIN
+                            alert('Incorrect PIN. Please try again.');
+                            currentPinAttempt = '';
+                        }
+                    } else if (currentPinAttempt.length < 4) {
+                        // Add digit
+                        currentPinAttempt += value;
+                        
+                        // If PIN is complete, automatically verify
+                        if (currentPinAttempt.length === 4 && currentPinAttempt === targetPin) {
+                            proceedWithProfile(profileId, profileName);
+                        } else if (currentPinAttempt.length === 4) {
+                            // Wrong PIN
+                            setTimeout(() => {
+                                alert('Incorrect PIN. Please try again.');
+                                currentPinAttempt = '';
+                                updatePinDisplay();
+                            }, 200);
+                        }
+                    }
+                    
+                    updatePinDisplay();
+                });
+            });
+            
+            function updatePinDisplay() {
+                const pinCircles = document.querySelectorAll('.pin-circle');
+                pinCircles.forEach((circle, index) => {
+                    if (index < currentPinAttempt.length) {
+                        circle.classList.add('filled');
+                    } else {
+                        circle.classList.remove('filled');
+                    }
+                });
+            }
+            
+            function proceedWithProfile(profileId, profileName) {
+                // Store profile info in session storage
+                sessionStorage.setItem('selectedProfileId', profileId);
+                sessionStorage.setItem('selectedProfileName', profileName);
+                sessionStorage.setItem('userId', firebase.auth().currentUser.uid);
+                // Redirect to the main app page
+                window.location.href = 'app.html';
+            }
+            
+            // Parent login link
+            document.getElementById('parent-login-link').addEventListener('click', () => {
+                profileSelectContainer.style.display = 'none';
+                authContainer.style.display = 'flex';
+            });
+            
+            // Check if user is already signed in
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in
+                    loadUserProfiles(user.uid);
+                } else {
+                    // User is signed out
+                    authContainer.style.display = 'flex';
+                    profileSelectContainer.style.display = 'none';
+                    profileCreateContainer.style.display = 'none';
                 }
             });
         });
     </script>
 </body>
 </html>
+``` 
